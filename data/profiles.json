@@ -1,0 +1,209 @@
+{
+  "profile_a": {
+    "name": "EE First-year Beginner",
+    "department": "EE",
+    "year": 1,
+    "interests": [
+      "AI",
+      "programming"
+    ],
+    "completed_courses": [],
+    "min_credits": 8,
+    "max_credits": 11,
+    "required_courses": [
+      "EE101"
+    ],
+    "earliest_start": "09:00",
+    "blocked_periods": [],
+    "notes": "No university programming experience."
+  },
+  "profile_b": {
+    "name": "EE Second-year AI Explorer",
+    "department": "EE",
+    "year": 2,
+    "interests": [
+      "AI",
+      "programming"
+    ],
+    "completed_courses": [
+      "EE101",
+      "EE110",
+      "EE120",
+      "CS101"
+    ],
+    "min_credits": 9,
+    "max_credits": 12,
+    "required_courses": [
+      "AI201"
+    ],
+    "earliest_start": "10:00",
+    "blocked_periods": [
+      {
+        "day": "Fri",
+        "start_time": "12:00",
+        "end_time": "23:59",
+        "label": "Friday afternoon"
+      }
+    ],
+    "notes": "Prefers AI and programming courses."
+  },
+  "profile_c": {
+    "name": "EE Third-year Signal and ML Student",
+    "department": "EE",
+    "year": 3,
+    "interests": [
+      "machine learning",
+      "signal processing"
+    ],
+    "completed_courses": [
+      "EE101",
+      "EE110",
+      "EE120",
+      "EE201",
+      "EE210",
+      "MATH210",
+      "CS101",
+      "AI201"
+    ],
+    "min_credits": 9,
+    "max_credits": 12,
+    "required_courses": [
+      "EE301"
+    ],
+    "earliest_start": "09:00",
+    "blocked_periods": [
+      {
+        "day": "Fri",
+        "start_time": "12:00",
+        "end_time": "23:59",
+        "label": "Friday afternoon"
+      }
+    ],
+    "notes": "Wants both signal-processing and AI courses."
+  },
+  "profile_d": {
+    "name": "EE Fourth-year Graduation Planner",
+    "department": "EE",
+    "year": 4,
+    "interests": [
+      "hardware",
+      "graduate study"
+    ],
+    "completed_courses": [
+      "EE101",
+      "EE110",
+      "EE120",
+      "EE201",
+      "EE202",
+      "EE210",
+      "EE230",
+      "EE301"
+    ],
+    "min_credits": 6,
+    "max_credits": 9,
+    "required_courses": [
+      "EE402"
+    ],
+    "earliest_start": "09:00",
+    "blocked_periods": [],
+    "notes": "Do not recommend completed courses."
+  },
+  "profile_e": {
+    "name": "EECS First-year Interdisciplinary Student",
+    "department": "EECS",
+    "year": 1,
+    "interests": [
+      "hardware",
+      "software",
+      "AI"
+    ],
+    "completed_courses": [],
+    "min_credits": 9,
+    "max_credits": 12,
+    "required_courses": [],
+    "earliest_start": "09:00",
+    "blocked_periods": [],
+    "notes": "Wants to explore both EE and CS before selecting a focus."
+  },
+  "profile_f": {
+    "name": "EECS Second-year Embedded AI Student",
+    "department": "EECS",
+    "year": 2,
+    "interests": [
+      "embedded systems",
+      "AI",
+      "programming"
+    ],
+    "completed_courses": [
+      "EE101",
+      "EE110",
+      "CS101",
+      "CS201"
+    ],
+    "min_credits": 9,
+    "max_credits": 12,
+    "required_courses": [
+      "EECS210"
+    ],
+    "earliest_start": "10:00",
+    "blocked_periods": [],
+    "notes": "Prefers a balance between hardware and software."
+  },
+  "profile_g": {
+    "name": "EECS Third-year AI Systems Student",
+    "department": "EECS",
+    "year": 3,
+    "interests": [
+      "machine learning",
+      "computer architecture",
+      "AI systems"
+    ],
+    "completed_courses": [
+      "EE101",
+      "EE110",
+      "CS101",
+      "CS201",
+      "MATH210",
+      "AI201",
+      "EE230"
+    ],
+    "min_credits": 9,
+    "max_credits": 12,
+    "required_courses": [
+      "AI301",
+      "EECS301"
+    ],
+    "earliest_start": "09:00",
+    "blocked_periods": [],
+    "notes": "Wants required AI and computer-architecture courses; classes may start at 09:00."
+  },
+  "profile_h": {
+    "name": "EECS Fourth-year Capstone Student",
+    "department": "EECS",
+    "year": 4,
+    "interests": [
+      "AIoT",
+      "system integration"
+    ],
+    "completed_courses": [
+      "EE101",
+      "EE110",
+      "CS101",
+      "CS201",
+      "EE230",
+      "MATH210",
+      "AI201",
+      "AI301",
+      "EECS210",
+      "EECS301"
+    ],
+    "min_credits": 6,
+    "max_credits": 9,
+    "required_courses": [
+      "EECS402"
+    ],
+    "earliest_start": "09:00",
+    "blocked_periods": [],
+    "notes": "Wants a capstone plus one advanced elective."
+  }
+}

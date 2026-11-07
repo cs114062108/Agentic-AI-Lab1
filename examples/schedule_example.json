@@ -1,0 +1,14 @@
+{
+  "student_profile": {
+    "department": "EE",
+    "year": 2
+  },
+  "selected_courses": [
+    {
+      "course_id": "AI201",
+      "reason": "A short reason based on the student profile."
+    }
+  ],
+  "total_credits": 3,
+  "explanation": "A short explanation of the proposed schedule."
+}

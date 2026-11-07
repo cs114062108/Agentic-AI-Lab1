@@ -1,0 +1,29 @@
+course_id,course_name,department,recommended_year,type,prerequisites,category,credits,difficulty,day,start_time,end_time
+EE101,Circuit Theory,EE,1,required,None,circuit,3,medium,Mon,10:00,12:00
+EE102,Introduction to Electrical Engineering,EE,1,required,None,general,2,easy,Fri,10:00,12:00
+EE110,Logic Design,EE,1,required,None,hardware,3,medium,Tue,13:00,16:00
+EE120,Computer Programming for Engineers,EE,1,required,None,programming,3,easy,Wed,10:00,12:00
+MATH110,Calculus II,MATH,1,required,None,math,3,medium,Thu,09:00,12:00
+CS101,Python Programming,CS,1,elective,None,programming,3,easy,Wed,10:00,12:00
+CS110,Introduction to Computer Science,CS,1,elective,None,programming,3,easy,Mon,13:00,16:00
+EE201,Signals and Systems,EE,2,required,EE101,signal,3,hard,Tue,09:00,12:00
+EE202,Electronics,EE,2,required,EE101,electronics,3,hard,Mon,13:00,16:00
+EE210,Probability for Electrical Engineering,EE,2,required,MATH110,math,3,medium,Fri,10:00,13:00
+EE230,Digital Systems,EE,2,elective,EE110,hardware,3,medium,Tue,13:00,16:00
+MATH210,Linear Algebra,MATH,2,elective,None,math,3,medium,Thu,10:00,12:00
+CS201,Data Structures,CS,2,elective,CS101,programming,3,medium,Wed,11:00,13:00
+CS210,Algorithms,CS,2,elective,CS201,programming,3,hard,Tue,10:00,13:00
+AI201,Introduction to AI,EECS,2,elective,CS101,ai,3,medium,Thu,13:00,16:00
+EECS210,Embedded System Design,EECS,2,elective,EE110;CS101,embedded,3,medium,Fri,13:00,16:00
+EE301,Digital Signal Processing,EE,3,elective,EE201,signal,3,hard,Mon,10:00,13:00
+EE302,Communication Systems,EE,3,elective,EE201;EE210,communication,3,hard,Tue,13:00,16:00
+AI301,Machine Learning,EECS,3,elective,AI201;MATH210,ai,3,hard,Fri,14:00,17:00
+AI302,Deep Learning,EECS,3,elective,AI301,ai,3,hard,Wed,13:00,16:00
+EECS301,Computer Architecture,EECS,3,elective,EE230;CS201,computer_systems,3,hard,Thu,09:00,12:00
+EECS302,Introduction to Computer Vision,EECS,3,elective,AI301,ai,3,hard,Tue,16:00,19:00
+EE401,VLSI System Design,EE,4,elective,EE230,hardware,3,hard,Mon,13:00,16:00
+EE402,Electrical Engineering Capstone,EE,4,required,EE301,project,3,hard,Fri,09:00,12:00
+EECS401,AIoT System Project,EECS,4,elective,EECS210;AI301,project,3,hard,Wed,13:00,16:00
+EECS402,EECS Capstone Project,EECS,4,required,EECS301,project,3,hard,Fri,10:00,13:00
+GE101,Technology and Society,GE,1,elective,None,general,2,easy,Fri,13:00,15:00
+PE101,Physical Education,PE,1,elective,None,general,1,easy,Mon,16:00,18:00

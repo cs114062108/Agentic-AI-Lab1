@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Lab 1 proposed course schedule",
+  "description": "Structural validation only. Catalog and planning constraints require separate Python checks.",
+  "type": "object",
+  "required": ["student_profile", "selected_courses", "total_credits", "explanation"],
+  "additionalProperties": false,
+  "properties": {
+    "student_profile": {
+      "type": "object",
+      "required": ["department", "year"],
+      "additionalProperties": false,
+      "properties": {
+        "department": {"type": "string", "enum": ["EE", "EECS"]},
+        "year": {"type": "integer", "minimum": 1, "maximum": 4}
+      }
+    },
+    "selected_courses": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["course_id", "reason"],
+        "additionalProperties": false,
+        "properties": {
+          "course_id": {"type": "string", "minLength": 1},
+          "reason": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "total_credits": {"type": "integer", "minimum": 0},
+    "explanation": {"type": "string", "minLength": 1}
+  }
+}
