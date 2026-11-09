@@ -4,8 +4,12 @@ import argparse
 import os
 import sys
 
-from openai import OpenAI
+import json
 
+from openai import OpenAI
+from openai.types.chat import ChatCompletionMessageParam
+
+from src.utils import Logger
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
@@ -15,6 +19,19 @@ def main() -> int:
         help="API model name, such as qwen2.5:3b, qwen2.5:7b, or llama3.1:8b.",
     )
     args = parser.parse_args()
+    
+    instructions = "You are a helpful assistant."
+    prompt = "Reply with exactly: API works"
+    
+    messages: list[ChatCompletionMessageParam] = [
+        {"role": "system", "content": instructions},
+        {"role": "user", "content": prompt},
+    ]
+    
+    Logger.info(f"Enage chat with model [{args.model}], prompt: {prompt}")
+    
+    messages_str = json.dumps(messages, indent=2, ensure_ascii=False)
+    print(messages_str)
 
     try:
         client = OpenAI(
@@ -25,35 +42,37 @@ def main() -> int:
             timeout=float(os.getenv("LLM_TIMEOUT", "120")),
             max_retries=0,
         )
-
+        
         response = client.chat.completions.create(
             model=args.model,
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": "Reply with exactly: API works"},
-            ],
+            messages=messages,
             temperature=0,
             max_tokens=32,
             stream=False,
         )
+        
+        response_message = response.choices[0].message
+        messages.append(response_message.model_dump(exclude_none=True))
     except Exception as exc:
-        print(
-            f"API call failed ({type(exc).__name__}).",
-            file=sys.stderr,
+        Logger.warning(
+            f"API call failed ({type(exc).__name__})."
         )
-        print(
+        Logger.warning(
             "Check that you have activated the course Python environment, "
-            "selected an available model, and used the correct API base URL.",
-            file=sys.stderr,
+            "selected an available model, and used the correct API base URL."
         )
-        print(
-            "If the request timed out, wait briefly and try again.",
-            file=sys.stderr,
+        Logger.warning(
+            "If the request timed out, wait briefly and try again."
         )
         return 1
 
-    print(f"Model: {args.model}")
+    Logger.info(f"Model: {args.model}")
+    Logger.info("Got response:")
     print(response.choices[0].message.content)
+    
+    messages_str = json.dumps(messages, indent=2, ensure_ascii=False)
+    print(messages_str)
+    
     return 0
 
 

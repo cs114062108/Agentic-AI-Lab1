@@ -6,10 +6,22 @@ import os
 from pathlib import Path
 from typing import Any
 
+from src.utils import Logger
+
 PARENT = Path(__file__).resolve().parents[1]
 ROOT = Path(os.path.abspath(".")).resolve()
 DATA_DIR = ROOT / "data"
 
+RESULTS_DIR = ROOT / "results"
+
+# [MAKEDIR] Try make results dir if not exist
+if not os.path.exists(RESULTS_DIR):
+    Logger.info("The directory 'results' does not exist")
+    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    if not os.path.exists(RESULTS_DIR):
+        Logger.error("The directory 'results' does not exist")
+    else:
+        Logger.info("Successfully maked the directory")
 
 def load_courses() -> list[dict[str, Any]]:
     """Load the course catalog and convert credits to integers."""

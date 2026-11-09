@@ -233,3 +233,10 @@ docs/_build/
 # uv project files, since not all use it
 pyproject.toml
 uv.lock
+
+# log
+log.txt
+
+# ---------------------------------------
+src/mymodule/
+src/utils/definition.py
