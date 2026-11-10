@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from openai import OpenAI
 from openai.types.chat import ChatCompletionMessageParam
+from openai.types.chat import ChatCompletionToolUnionParam
 from openai.types import ChatModel
 
 import os
@@ -9,6 +10,7 @@ import json
 
 from src.utils import Logger, RESULTS_DIR
 from src.chats import ChatSession
+from src.core.agent_toolbox import AgentToolbox
 
 class AIService:
     __client: OpenAI | None
@@ -18,6 +20,8 @@ class AIService:
     
     __session_histories: dict[str, list[ChatCompletionMessageParam]]
     
+    __tool_schemas: list[ChatCompletionToolUnionParam]
+    
     def __init__(self):
         self.__chat_sessions = {}
         self.__model_name = os.getenv("LLM_MODEL", "qwen2.5:3b")
@@ -25,6 +29,8 @@ class AIService:
         
         self.__session_histories = {}
         self.load_all_histories()
+        
+        self.__tool_schemas = AgentToolbox.tool_schemas
         
         try:
             
@@ -52,9 +58,10 @@ class AIService:
                 self.__client, self.__model_name, 
                 instructions=self.__instructions, 
                 user_name=user_name,
-                histories=prev_histories
+                histories=prev_histories,
+                tool_schemas=self.__tool_schemas
             )
-            Logger.info(f"Created new chat session for user '{user_name}'.")
+            Logger.info(f"Created new chat session for user '{user_name}' with model [{self.__model_name}].")
         
         return self.__chat_sessions[user_name]
     
@@ -106,6 +113,31 @@ class AIService:
         return []
     
     # --- Save to json file and load ---
+    def save_chat_histories(self, user_name: str, file_name: str):
+        if not file_name:
+            Logger.warning("File name is empty")
+            return
+        
+        if not file_name.endswith(".json"):
+            file_name += ".json"
+        
+        histories = self.get_chat_histories(user_name)
+        if not histories:
+            Logger.info(f"Chat history for user '{user_name}' is empty or not found, don't save")
+            return
+        
+        dat: dict[str, object] = {}
+        dat["model_name"] = self.__model_name
+        dat["instructions"] = self.__instructions
+        dat["user_name"] = user_name
+        dat["histories"] = histories
+        
+        json_path = RESULTS_DIR / file_name
+        with json_path.open("w", encoding="utf-8") as file:
+            json.dump(dat, file, indent=2, ensure_ascii=False)
+            
+        Logger.info(f"Chat history for user '{user_name}' with model [{self.__model_name}] saved to file '{file_name}'")
+    
     def save_all_histories(self):
         dat: dict[str, object] = {}
         dat["model_name"] = self.__model_name

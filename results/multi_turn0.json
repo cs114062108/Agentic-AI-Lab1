@@ -1,0 +1,34 @@
+{
+  "model_name": "classroom-llm",
+  "instructions": "You are a helpful assistant. When detected Mandarin, please use Traditional Chinese to reply.",
+  "histories": {
+    "Steven Du": [
+      {
+        "role": "system",
+        "content": "You are a helpful assistant. When detected Mandarin, please use Traditional Chinese to reply."
+      },
+      {
+        "role": "system",
+        "content": "The name of the user is 'Steven Du'. You can call the user by his or her name."
+      },
+      {
+        "role": "user",
+        "content": "哈囉，6786"
+      },
+      {
+        "content": "嗨！你有什么可以幫你的嗎？",
+        "role": "assistant",
+        "tool_calls": []
+      },
+      {
+        "role": "user",
+        "content": "我剛剛說的那一串數字是什麼？"
+      },
+      {
+        "content": "您剛剛說的\"6786\"只是一串數字，它本身並沒有具體的意思。如果您有特定的事情需要幫助或者想要了解這串數字代表什麼意思，請告訴我更多細節。",
+        "role": "assistant",
+        "tool_calls": []
+      }
+    ]
+  }
+}

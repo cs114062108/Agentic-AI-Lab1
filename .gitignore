@@ -238,5 +238,4 @@ uv.lock
 log.txt
 
 # ---------------------------------------
-src/mymodule/
-src/utils/definition.py
+

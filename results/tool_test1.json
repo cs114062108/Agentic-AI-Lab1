@@ -1,0 +1,91 @@
+{
+  "model_name": "classroom-llm",
+  "instructions": "You are a helpful assistant. When detected Mandarin, please use Traditional Chinese to reply.",
+  "user_name": "Steven Du",
+  "histories": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant. When detected Mandarin, please use Traditional Chinese to reply."
+    },
+    {
+      "role": "system",
+      "content": "The name of the user is 'Steven Du'. You can call the user by his or her name."
+    },
+    {
+      "role": "user",
+      "content": "你目前有哪些tool？"
+    },
+    {
+      "content": "目前可用的工具包括：一个可以从实况Open-Meteo API获取城市天气状况的功能。请提供一个城市名称，我将为您查询该城市的天气信息。",
+      "role": "assistant",
+      "tool_calls": []
+    },
+    {
+      "role": "user",
+      "content": "那幫我查一下新竹的天氣"
+    },
+    {
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "id": "chatcmpl-tool-aeb4be35270b8f09",
+          "function": {
+            "arguments": "{\"city\": \"新竹\"}",
+            "name": "get_current_weather"
+          },
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "chatcmpl-tool-aeb4be35270b8f09",
+      "content": "{\"source\": \"Open-Meteo (real weather API)\", \"location\": \"Hsinchu, Taiwan\", \"time\": \"2026-11-10T22:30\", \"timezone\": \"Asia/Taipei\", \"temperature_c\": 18.2, \"relative_humidity_percent\": 77, \"wind_speed_kmh\": 29.3, \"condition\": \"晴朗\"}"
+    },
+    {
+      "content": "根據實況Open-Meteo API，新竹的天氣如下：\n- 溫度：18.2°C\n- 相對濕度：77%\n- 風速：29.3 km/h\n- 天氣狀況：晴朗\n\n資料更新時間為：2026年11月10日 22:30（台北時間）。",
+      "role": "assistant",
+      "tool_calls": []
+    },
+    {
+      "role": "user",
+      "content": "可以順便幫我查台北和新北的天氣嗎？"
+    },
+    {
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "id": "chatcmpl-tool-8a93f1bfccb2d088",
+          "function": {
+            "arguments": "{\"city\": \"台北\"}",
+            "name": "get_current_weather"
+          },
+          "type": "function"
+        },
+        {
+          "id": "chatcmpl-tool-af78eb7d8839c0c9",
+          "function": {
+            "arguments": "{\"city\": \"新北\"}",
+            "name": "get_current_weather"
+          },
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "chatcmpl-tool-8a93f1bfccb2d088",
+      "content": "{\"source\": \"Open-Meteo (real weather API)\", \"location\": \"Taipei, Taiwan\", \"time\": \"2026-11-10T23:00\", \"timezone\": \"Asia/Taipei\", \"temperature_c\": 16.8, \"relative_humidity_percent\": 94, \"wind_speed_kmh\": 4.5, \"condition\": \"大致晴朗\"}"
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "chatcmpl-tool-af78eb7d8839c0c9",
+      "content": "{\"source\": \"Open-Meteo (real weather API)\", \"location\": \"New Taipei City, Taiwan\", \"time\": \"2026-11-10T23:00\", \"timezone\": \"Asia/Taipei\", \"temperature_c\": 16.7, \"relative_humidity_percent\": 92, \"wind_speed_kmh\": 5.1, \"condition\": \"晴朗\"}"
+    },
+    {
+      "content": "根據實況Open-Meteo API，以下是台北和新北的天氣：\n\n### 台北\n- 溫度：16.8°C\n- 相對濕度：94%\n- 風速：4.5 km/h\n- 天氣狀況：大致晴朗\n\n資料更新時間為：2026年11月10日 23:00（台北時間）。\n\n### 新北\n- 溫度：16.7°C\n- 相對濕度：92%\n- 風速：5.1 km/h\n- 天氣狀況：晴朗\n\n資料更新時間為：2026年11月10日 23:00（台北時間）。",
+      "role": "assistant",
+      "tool_calls": []
+    }
+  ]
+}
