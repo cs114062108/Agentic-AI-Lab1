@@ -38,6 +38,14 @@ def load_profiles() -> dict[str, dict[str, Any]]:
     with (DATA_DIR / "profiles.json").open(encoding="utf-8") as file:
         return json.load(file)
 
+def load_instructions() -> str:
+    instruction_path = DATA_DIR / "instructions.txt"
+    if not os.path.exists(instruction_path):
+        print("Oh nooooo")
+        return ""
+    
+    with instruction_path.open(encoding="utf-8") as file:
+        return file.read()
 
 def courses_as_text(courses: list[dict[str, Any]]) -> str:
     """Convert the course catalog into text suitable for an LLM prompt."""
@@ -54,3 +62,7 @@ def courses_as_text(courses: list[dict[str, Any]]) -> str:
             f'{course["start_time"]}-{course["end_time"]}'
         )
     return "\n".join(lines)
+
+
+if __name__ == "__main__":
+    print(load_instructions())

@@ -7,11 +7,12 @@ from collections import defaultdict
 
 import json
 from src.utils import Logger, RESULTS_DIR
+from src.utils.definition import ToolType
+from src.utils.tool_utils import generate_schema
 
 from src.extension import ExtensionEngine
 
 from openai.types.chat import ChatCompletionToolUnionParam
-ToolType: TypeAlias = Callable[[Any], str] | Coroutine[Any, Any, str]
 
 class Toolbox(ExtensionEngine[ToolType]):
     # -- Tools --
@@ -48,12 +49,16 @@ class Toolbox(ExtensionEngine[ToolType]):
         Logger.info(f"Found {len(self.tools)} tools: {list(self.tools_dict.keys())}")
     
     # --- Process Tools ---
-    def process_tool(self, name: str, args_text: str) -> tuple[bool, str]:
-        """Processes tool
+    def process_tool(
+        self, name: str, args_text: str, 
+        additional_tools: dict[str, ToolType] = {}
+    ) -> tuple[bool, str]:
+        """Processes registered tools and additional tools
 
         Args:
             name (str): The name of the tool
             args_text (str): The jsonfied arguments text
+            additional_tools (dict[str, ToolType]): Additional Tools
 
         Returns:
             succeeded (bool): Succeeded or not
@@ -73,6 +78,12 @@ class Toolbox(ExtensionEngine[ToolType]):
             return (succeeded, result)
         
         func = self.tools_dict.get(name)
+        if (not func) and (additional_tools != {}):
+            func = additional_tools.get(name)
+            if func:
+                Logger.info(f"[Addition Tool] Will try process additional tool '{name}'")
+                print(args_text)
+        
         if func:
             Logger.info(f"[Tool] Processing tool '{name}'...")
             try:

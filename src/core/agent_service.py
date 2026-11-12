@@ -8,8 +8,9 @@ from openai.types import ChatModel
 import os
 import json
 
-from src.utils import Logger, RESULTS_DIR
+from src.utils import Logger, RESULTS_DIR, load_instructions, load_courses, courses_as_text
 from src.chats import ChatSession
+from src.utils.definition import StudentProfile, ProfileData
 from src.core.agent_toolbox import AgentToolbox
 
 class AIService:
@@ -18,6 +19,7 @@ class AIService:
     __instructions: str
     __chat_sessions: dict[str, ChatSession]
     
+    __student_profiles: dict[str, StudentProfile]
     __session_histories: dict[str, list[ChatCompletionMessageParam]]
     
     __tool_schemas: list[ChatCompletionToolUnionParam]
@@ -25,11 +27,27 @@ class AIService:
     def __init__(self):
         self.__chat_sessions = {}
         self.__model_name = os.getenv("LLM_MODEL", "qwen2.5:3b")
-        self.__instructions = "You are a helpful assistant. When detected Mandarin, please use Traditional Chinese to reply."
         
+        # Instructions & Course Catalog
+        instructions = load_instructions()
+        instructions += "\n\n"
+        
+        courses = load_courses()
+        catalog = courses_as_text(courses)
+        
+        instructions += "## Course Catalog\n\n"
+        instructions += catalog
+        
+        self.__instructions = instructions
+        
+        # Profiles
+        self.__student_profiles = {}
+        
+        # Histories
         self.__session_histories = {}
         self.load_all_histories()
         
+        # Tools
         self.__tool_schemas = AgentToolbox.tool_schemas
         
         try:
@@ -54,12 +72,16 @@ class AIService:
             if prev_histories:
                 Logger.info(f"Previous history for user '{user_name}' found.")
             
+            # Pass profile to session
+            profile = self.__student_profiles.setdefault(user_name, StudentProfile())
+            
             self.__chat_sessions[user_name] = ChatSession(
                 self.__client, self.__model_name, 
                 instructions=self.__instructions, 
                 user_name=user_name,
                 histories=prev_histories,
-                tool_schemas=self.__tool_schemas
+                tool_schemas=self.__tool_schemas,
+                student_profile=profile
             )
             Logger.info(f"Created new chat session for user '{user_name}' with model [{self.__model_name}].")
         
@@ -74,6 +96,16 @@ class AIService:
             return respond
         else:
             return "❌ Some error occured when calling the AI. Please check the log message."
+    
+    def reset_user(self, user_name: str, auto_save = True):
+        self.clear_chat_histories(user_name, auto_save=False)
+        
+        if user_name in self.__student_profiles:
+            self.__student_profiles[user_name].reset()
+            Logger.info(f"Profile reseted for user '{user_name}'")
+        
+        if auto_save:
+            self.save_all_histories()
     
     def clear_chat_histories(self, user_name: str, auto_save = True) -> bool:
         if user_name in self.__chat_sessions:
@@ -112,6 +144,13 @@ class AIService:
         Logger.info(f"No recent chat histories found for user '{user_name}'")
         return []
     
+    def get_user_profile(self, user_name: str) -> ProfileData:
+        if user_name in self.__student_profiles:
+            return self.__student_profiles[user_name].to_dict()
+        
+        Logger.info(f"No profile found for user '{user_name}'")
+        return {}
+    
     # --- Save to json file and load ---
     def save_chat_histories(self, user_name: str, file_name: str):
         if not file_name:
@@ -132,6 +171,14 @@ class AIService:
         dat["user_name"] = user_name
         dat["histories"] = histories
         
+        profile = self.__student_profiles.get(user_name)
+        profile_dat: ProfileData = {}
+        if profile:
+            profile_dat = profile.to_dict()
+        else:
+            Logger.info(f"No profile for user '{user_name}'")
+        dat["profile"] = profile_dat
+        
         json_path = RESULTS_DIR / file_name
         with json_path.open("w", encoding="utf-8") as file:
             json.dump(dat, file, indent=2, ensure_ascii=False)
@@ -150,6 +197,11 @@ class AIService:
         
         self.__session_histories = session_histories
         
+        profile_dats: dict[str, ProfileData] = {}
+        for user_name, profile in self.__student_profiles.items():
+            profile_dats[user_name] = profile.to_dict()
+        dat["profiles"] = profile_dats
+        
         json_path = RESULTS_DIR / "histories.json"
         with json_path.open("w", encoding="utf-8") as file:
             json.dump(dat, file, indent=2, ensure_ascii=False)
@@ -164,6 +216,12 @@ class AIService:
                 dat = json.load(file)
         
         self.__session_histories = dat.get("histories", {})
+        
+        profile_dats: dict[str, ProfileData] = dat.get("profiles", {})
+        self.__student_profiles = {
+            user_name: StudentProfile.from_dict(profile_dat)
+            for user_name, profile_dat in profile_dats.items()
+        }
 
 
 AgentService = AIService()

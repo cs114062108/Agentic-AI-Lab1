@@ -35,6 +35,8 @@ def main() -> int:
     if not user_name:
         user_name = test_user_name
     
+    Logger.info(f"Current user: {user_name}")
+    
     try:
         while True:
             message = input(">> ")
@@ -46,6 +48,11 @@ def main() -> int:
                     print(f"{CYAN}Histories Retrieved:{RESET}")
                     histories_text = json.dumps(histories, indent=2, ensure_ascii=False)
                     print(histories_text)
+                elif message == "!profile":
+                    profile = AgentService.get_user_profile(user_name)
+                    print(f"{CYAN}Profile Retrieved:{RESET}")
+                    profile_text = json.dumps(profile, indent=2, ensure_ascii=False)
+                    print(profile_text)
                 elif message == "!save":
                     file_name = input(f"{YELLOW}Enter File Name: {RESET}").strip()
                     AgentService.save_chat_histories(user_name, file_name)
@@ -55,6 +62,9 @@ def main() -> int:
                         print(f"{GREEN}Histories Cleared and Reseted!{RESET}")
                     else:
                         print(f"{RED}History is already empty!{RESET}")
+                elif message == "!reset":
+                    AgentService.reset_user(user_name)
+                    print(f"{GREEN}Histories and Profile Reseted!{RESET}")
             else:
                 response = AgentService.chat_engage(user_name, message)
                 print(response)
