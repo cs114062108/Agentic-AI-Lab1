@@ -79,6 +79,7 @@ class ChatSession:
     def histories(self) -> list[ChatCompletionMessageParam]:
         return self.__histories.copy()
 
+    # --- Aditional Tools ---
     def update_student_profile(
         self, 
         department: str | None = None, 
