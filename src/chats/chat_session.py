@@ -89,7 +89,8 @@ class ChatSession:
         max_credits: int | None = None
     ) -> str:
         """
-        Update the student's profile using information explicitly 
+        Before you recommend any courses, make sure to call this tool to
+        update the student's profile using information explicitly 
         provided by the student. Only include fields that are known. 
         Do not guess missing information.
         """

@@ -82,10 +82,10 @@ class Toolbox(ExtensionEngine[ToolType]):
             func = additional_tools.get(name)
             if func:
                 Logger.info(f"[Addition Tool] Will try process additional tool '{name}'")
-                print(args_text)
         
         if func:
             Logger.info(f"[Tool] Processing tool '{name}'...")
+            Logger.info(f"[Tool] {args_text}")
             try:
                 result = func(**args)
                 Logger.info(f"[Tool] Tool '{name}' execution completed")

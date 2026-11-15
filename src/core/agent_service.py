@@ -180,10 +180,13 @@ class AIService:
         dat["profile"] = profile_dat
         
         json_path = RESULTS_DIR / file_name
-        with json_path.open("w", encoding="utf-8") as file:
-            json.dump(dat, file, indent=2, ensure_ascii=False)
-            
-        Logger.info(f"Chat history for user '{user_name}' with model [{self.__model_name}] saved to file '{file_name}'")
+        try:
+            with json_path.open("w", encoding="utf-8") as file:
+                json.dump(dat, file, indent=2, ensure_ascii=False)
+            Logger.info(f"Chat history for user '{user_name}' with model [{self.__model_name}] saved to file '{file_name}'")
+        except Exception as err:
+            Logger.warning(f"Failed saving the exported history & profile")
+            Logger.warning(f"{err.__class__.__name__}: {err}")
     
     def save_all_histories(self):
         dat: dict[str, object] = {}

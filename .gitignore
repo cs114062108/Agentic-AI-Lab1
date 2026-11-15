@@ -238,4 +238,6 @@ uv.lock
 log.txt
 
 # ---------------------------------------
-
+# Report pdf
+reports/*.html
+*.pdf

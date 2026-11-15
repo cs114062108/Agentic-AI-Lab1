@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Callable
+
 from src.core.agent_service import AgentService
 from src.utils import Logger
 
@@ -36,35 +38,43 @@ def main() -> int:
         user_name = test_user_name
     
     Logger.info(f"Current user: {user_name}")
+
+    check_command: Callable[[str, str], bool] = lambda msg, cmd: (msg == cmd) or msg.startswith(f"{cmd} ")
     
     try:
         while True:
             message = input(">> ")
             if message.startswith("!"):
-                if message == "!exit":
+                message = message[1:]
+                if check_command(message, "exit"):
                     break
-                elif message == "!history":
+                elif check_command(message, "history"):
                     histories = AgentService.get_chat_histories(user_name)
                     print(f"{CYAN}Histories Retrieved:{RESET}")
                     histories_text = json.dumps(histories, indent=2, ensure_ascii=False)
                     print(histories_text)
-                elif message == "!profile":
+                elif check_command(message, "profile"):
                     profile = AgentService.get_user_profile(user_name)
                     print(f"{CYAN}Profile Retrieved:{RESET}")
                     profile_text = json.dumps(profile, indent=2, ensure_ascii=False)
                     print(profile_text)
-                elif message == "!save":
+                elif check_command(message, "save"):
                     file_name = input(f"{YELLOW}Enter File Name: {RESET}").strip()
                     AgentService.save_chat_histories(user_name, file_name)
-                elif message == "!clear":
+                elif check_command(message, "clear"):
                     cleared = AgentService.clear_chat_histories(user_name)
                     if cleared:
                         print(f"{GREEN}Histories Cleared and Reseted!{RESET}")
                     else:
                         print(f"{RED}History is already empty!{RESET}")
-                elif message == "!reset":
+                elif check_command(message, "reset"):
                     AgentService.reset_user(user_name)
                     print(f"{GREEN}Histories and Profile Reseted!{RESET}")
+                else:
+                    splited = message.split()
+                    print(
+                        f"{RED}The {BLUE}command {YELLOW}'{splited[0] if splited else message}' {RED}is not defined!{RESET}"
+                    )
             else:
                 response = AgentService.chat_engage(user_name, message)
                 print(response)
