@@ -8,7 +8,7 @@ import importlib.util
 import importlib.machinery
 
 from src.extension import errors
-from src.extension import ToolCog
+from src.extension import ToolCog, Tool
 
 if TYPE_CHECKING:
     from discord.ext.commands import bot
@@ -21,8 +21,8 @@ class ExtensionEngine(Generic[TOOL_T]):
     """
     __extensions: dict[str, types.ModuleType]
     __cogs: dict[str, ToolCog]
-    tools: list[TOOL_T]
-    tools_dict: dict[str, TOOL_T]
+    tools: list[Tool[TOOL_T]]
+    tools_dict: dict[str, Tool[TOOL_T]]
     tool_names: list[str]
     tool_schemas: list[dict[str, object]]
 
@@ -72,7 +72,7 @@ class ExtensionEngine(Generic[TOOL_T]):
             self.tool_schemas.extend(cog.tool_schemas)
             
             for tool in cog.tools:
-                self.tools_dict[tool.__name__] = tool
+                self.tools_dict[tool.name] = tool
     
     def _resolve_name(self, name: str, package: Optional[str]) -> str:
         try:

@@ -32,10 +32,17 @@ def main() -> int:
 
     test_user_name = "Test User"
     user_name = os.getenv("USER_NAME", "")
-    if not user_name:
-        user_name = input("Enter user name: ").strip()
-    if not user_name:
-        user_name = test_user_name
+    
+    another = False
+    if user_name:
+        inp = input(f"{BLUE}Start as user {YELLOW}'{user_name}'{BLUE}? {CYAN}({GREEN}y{CYAN}/{RED}n{CYAN}): {RESET}").strip()
+        if inp.lower() == "n":
+            another = True
+    
+    if (not user_name) or another:
+        user_name = input(f"{BLUE}Enter user name: {RESET}").strip()
+        if not user_name:
+            user_name = test_user_name
     
     Logger.info(f"Current user: {user_name}")
 
@@ -51,6 +58,7 @@ def main() -> int:
                 elif check_command(message, "history"):
                     histories = AgentService.get_chat_histories(user_name)
                     print(f"{CYAN}Histories Retrieved:{RESET}")
+                    if histories: histories = histories[1:]
                     histories_text = json.dumps(histories, indent=2, ensure_ascii=False)
                     print(histories_text)
                 elif check_command(message, "profile"):
@@ -84,4 +92,9 @@ def main() -> int:
     
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    import sys
+    
+    try:
+        raise SystemExit(main())
+    except (KeyboardInterrupt, EOFError):
+        print(f"{RED}UUUUUUUAAAAAAAAAAAAHHHHHHHHH!!!!!!!!{RESET}", file=sys.stderr)

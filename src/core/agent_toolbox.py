@@ -10,17 +10,13 @@ from src.utils import Logger, RESULTS_DIR
 from src.utils.definition import ToolType
 from src.utils.tool_utils import generate_schema
 
-from src.extension import ExtensionEngine
+from src.extension import ExtensionEngine, ToolCog, Tool
 
 from openai.types.chat import ChatCompletionToolUnionParam
 
 class Toolbox(ExtensionEngine[ToolType]):
     # -- Tools --
     initial_extensions: list[str]
-    tools: list[ToolType]
-    tool_names: list[str]
-    tool_schemas: list[ChatCompletionToolUnionParam]
-    tools_dict: dict[str, ToolType]
     
     def __init__(self, tools: list[ToolType] = []):
         super().__init__()
@@ -77,17 +73,17 @@ class Toolbox(ExtensionEngine[ToolType]):
             result = f"The arguments provided are invalid"
             return (succeeded, result)
         
-        func = self.tools_dict.get(name)
-        if (not func) and (additional_tools != {}):
-            func = additional_tools.get(name)
-            if func:
+        tool = self.tools_dict.get(name)
+        if (not tool) and (additional_tools != {}):
+            tool = additional_tools.get(name)
+            if tool:
                 Logger.info(f"[Addition Tool] Will try process additional tool '{name}'")
         
-        if func:
+        if tool:
             Logger.info(f"[Tool] Processing tool '{name}'...")
             Logger.info(f"[Tool] {args_text}")
             try:
-                result = func(**args)
+                result = tool(**args)
                 Logger.info(f"[Tool] Tool '{name}' execution completed")
                 succeeded = True
                 return (succeeded, result)
@@ -119,22 +115,23 @@ class Toolbox(ExtensionEngine[ToolType]):
         json_path = RESULTS_DIR / "tool_schemas.json"
         with json_path.open("w", encoding="utf-8") as file:
             json.dump(self.tool_schemas, file, indent=2, ensure_ascii=False)
-    
 
-tools_to_get = []
-AgentToolbox = Toolbox(tools=tools_to_get)
+
 
 
 if __name__ == "__main__":
+    tools_init = []
+    TestToolbox = Toolbox(tools=tools_init)
+    
     print()
     print("----- Test -----")
-    print(f"cog_names: {AgentToolbox.cog_names}")
-    print(f"tools: {AgentToolbox.tools}")
-    print(f"tool_names: {AgentToolbox.tool_names}")
-    print(f"tools_dict: {AgentToolbox.tools_dict}")
+    print(f"cog_names: {TestToolbox.cog_names}")
+    print(f"tools: {TestToolbox.tools}")
+    print(f"tool_names: {TestToolbox.tool_names}")
+    print(f"tools_dict: {TestToolbox.tools_dict}")
     
-    print(f"tool_schemas: {AgentToolbox.tool_schemas}")
-    tool_schemas_text = json.dumps(AgentToolbox.tool_schemas, indent=2, ensure_ascii=False)
+    print(f"tool_schemas: {TestToolbox.tool_schemas}")
+    tool_schemas_text = json.dumps(TestToolbox.tool_schemas, indent=2, ensure_ascii=False)
     print(tool_schemas_text)
     
-    AgentToolbox.save_tool_schemas()
+    TestToolbox.save_tool_schemas()

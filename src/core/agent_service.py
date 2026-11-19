@@ -11,13 +11,15 @@ import json
 from src.utils import Logger, RESULTS_DIR, load_instructions, load_courses, courses_as_text
 from src.chats import ChatSession
 from src.utils.definition import StudentProfile, ProfileData
-from src.core.agent_toolbox import AgentToolbox
+from src.core.agent_toolbox import Toolbox
 
 class AIService:
     __client: OpenAI | None
     __model_name: ChatModel | str
     __instructions: str
     __chat_sessions: dict[str, ChatSession]
+    
+    __toolbox: Toolbox
     
     __student_profiles: dict[str, StudentProfile]
     __session_histories: dict[str, list[ChatCompletionMessageParam]]
@@ -27,6 +29,8 @@ class AIService:
     def __init__(self):
         self.__chat_sessions = {}
         self.__model_name = os.getenv("LLM_MODEL", "qwen2.5:3b")
+        
+        Logger.info(f"Initializing with model name {self.__model_name}")
         
         # Instructions & Course Catalog
         instructions = load_instructions()
@@ -48,16 +52,22 @@ class AIService:
         self.load_all_histories()
         
         # Tools
-        self.__tool_schemas = AgentToolbox.tool_schemas
+        tools_init = []
+        self.__toolbox = Toolbox(tools=tools_init)
+        self.__tool_schemas = self.__toolbox.tool_schemas
         
         try:
+            base_url = os.getenv(
+                "LLM_BASE_URL", "http://127.0.0.1:8000/v1"
+            )
+            Logger.info(f"LLM Base URL: {base_url}")
+            api_key = os.getenv("LLM_API_KEY", "classroom-internal")
+            timeout = float(os.getenv("LLM_TIMEOUT", "120"))
             
             self.__client = OpenAI(
-                base_url=os.getenv(
-                    "LLM_BASE_URL", "http://127.0.0.1:8000/v1"
-                ),
-                api_key=os.getenv("LLM_API_KEY", "classroom-internal"),
-                timeout=float(os.getenv("LLM_TIMEOUT", "120")),
+                base_url=base_url,
+                api_key=api_key,
+                timeout=timeout,
                 max_retries=0,
             )
         except Exception as err:
@@ -75,7 +85,7 @@ class AIService:
             # Pass profile to session
             profile = self.__student_profiles.setdefault(user_name, StudentProfile())
             
-            self.__chat_sessions[user_name] = ChatSession(
+            new_chat = ChatSession(
                 self.__client, self.__model_name, 
                 instructions=self.__instructions, 
                 user_name=user_name,
@@ -83,6 +93,9 @@ class AIService:
                 tool_schemas=self.__tool_schemas,
                 student_profile=profile
             )
+            new_chat.pass_service(self, toolbox=self.__toolbox)
+            
+            self.__chat_sessions[user_name] = new_chat
             Logger.info(f"Created new chat session for user '{user_name}' with model [{self.__model_name}].")
         
         return self.__chat_sessions[user_name]

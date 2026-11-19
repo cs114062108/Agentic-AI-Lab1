@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from typing import TYPE_CHECKING
 from copy import deepcopy
 
 from openai import OpenAI
@@ -13,9 +14,15 @@ from src.utils.definition import StudentProfile, ConversationMode, ToolType
 from src.utils.tool_utils import generate_schema
 
 from src.utils import Logger
-from src.core.agent_toolbox import AgentToolbox
+
+if TYPE_CHECKING:
+    from src.core.agent_service import AIService
+    from src.core.agent_toolbox import Toolbox
 
 class ChatSession:
+    __service: AIService | None
+    __tool_box: Toolbox | None
+    
     __client: OpenAI
     __model_name: ChatModel | str
     __instructions: str | None = None
@@ -35,9 +42,15 @@ class ChatSession:
         tool_schemas: list[ChatCompletionToolUnionParam] | None = None,
         student_profile: StudentProfile | None = None
     ):
+        # Service & Toolbox
+        self.__service = None
+        self.__tool_box = None
+        
+        # AI Client
         self.__client = client
         self.__model_name = model_name
         self.__instructions = instructions
+        
         self.__user_name = user_name
         
         # Tool Schemas
@@ -62,6 +75,11 @@ class ChatSession:
             Logger.info(f"Initializing chat session history for user '{user_name}'")
             self.__histories.extend(self.__init_histories)
 
+    def pass_service(self, service: AIService, toolbox: Toolbox | None = None):
+        self.__service = service
+        if toolbox:
+            self.__tool_box = toolbox
+    
     def set_model_name(self, model_name: ChatModel | str):
         self.__model_name = model_name
     
@@ -155,7 +173,12 @@ class ChatSession:
                 name = call.function.name
                 args_text = call.function.arguments
                 tools = self.get_additional_tools()
-                succeeded, result = AgentToolbox.process_tool(name, args_text, additional_tools=tools)
+                if self.__tool_box:
+                    succeeded, result = self.__tool_box.process_tool(name, args_text, additional_tools=tools)
+                else:
+                    succeeded = False
+                    result = "Sorry, the tool proccessor is currently unavailable now. Please report to the user."
+                    Logger.warning(f"[TOOLBOX] {result}")
                 histories.append({"role": "tool", "tool_call_id": call.id, "content": result})
             
             tool_executed = True
@@ -198,8 +221,9 @@ class ChatSession:
             )
         }
 
-        state_str = json.dumps(state_message, indent=2, ensure_ascii=False)
-        print(state_str)
+        #state_str = json.dumps(state_message, indent=2, ensure_ascii=False)
+        #print(state_str)
+        Logger.info(f"CONVERSATION MODE: {mode}")
         
         # Place dynamic state before the conversation content to avoid the cumulative repetition of system messages in each turn.
         insert_at = next(
@@ -211,10 +235,6 @@ class ChatSession:
         )
 
         messages.insert(insert_at, state_message)
-        """
-        msg_str = json.dumps(messages, indent=2, ensure_ascii=False)
-        print(msg_str)
-        """
 
         return messages
     

@@ -241,3 +241,6 @@ log.txt
 # Report pdf
 reports/*.html
 *.pdf
+
+# Histories
+results/histories.json
